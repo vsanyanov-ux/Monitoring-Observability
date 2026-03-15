@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from langchain_community.chat_models import ChatYandexGPT
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
-from langfuse import observe
+from langfuse import observe, get_client
 
 # Local imports
 from loader import load_pdf
@@ -69,19 +69,13 @@ class RAGSystem:
         answer = chain.invoke({"context": context_text, "question": question})
         return answer
 
-    @observe()
+    @observe(name="RAG Query")
     def query(self, question: str):
         """Execute the full RAG pipeline."""
-        # langfuse_context is not explicitly imported, we use observe's internal context if needed
-        # Or just use the global langfuse client from observability
-        from observability import langfuse
-        langfuse_context = observe.get_context() 
-        langfuse_context.update_current_trace(name="RAG Query", input=question)
-        
         contexts, docs = self.retrieve(question)
         answer = self.generate(question, contexts)
         
-        langfuse_context.update_current_trace(output=answer)
+        get_client().update_current_span(output=answer)
         return answer, docs
 
 if __name__ == "__main__":

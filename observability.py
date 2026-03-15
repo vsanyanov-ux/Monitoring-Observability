@@ -43,7 +43,7 @@ def track_event(name: str, metadata: Dict[str, Any] = None):
 
 def log_metric(name: str, value: float, trace_id: str = None):
     """Log a score/metric to Langfuse."""
-    langfuse.score(
+    langfuse.create_score(
         name=name,
         value=value,
         trace_id=trace_id

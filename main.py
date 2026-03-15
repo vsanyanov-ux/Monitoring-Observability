@@ -25,7 +25,7 @@ def main():
     question = "How does Henry George explain the persistence of poverty?"
     answer, _ = rag.query(question)
     
-    print("\n🤖 AI Answer:")
+    print("\nAI Answer:")
     print(answer)
     
     print("\nStarting automated evaluation...")

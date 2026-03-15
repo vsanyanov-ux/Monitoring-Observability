@@ -8,10 +8,8 @@ from ragas.metrics import (
     ContextPrecision,
     ContextRecall,
 )
-faithfulness = Faithfulness()
-answer_relevance = AnswerRelevancy()
-context_precision = ContextPrecision()
-context_recall = ContextRecall()
+from ragas.llms import LangchainLLMWrapper
+from ragas.embeddings import LangchainEmbeddingsWrapper
 from langchain_openai import ChatOpenAI
 from datasets import Dataset
 
@@ -42,10 +40,21 @@ class RAGEvaluator:
             temperature=0
         )
         
+        # Wrap for RAGAS
+        self.ragas_llm = LangchainLLMWrapper(self.judge_llm)
+        
         # Note: RAGAS might need specific embeddings too.
         # We'll use HuggingFace embeddings which are free/local.
         from langchain_huggingface import HuggingFaceEmbeddings
-        self.embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self.langchain_embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        self.ragas_embeddings = LangchainEmbeddingsWrapper(self.langchain_embeddings)
+        
+        # Initialize metrics with the judge LLM
+        self.metrics = [
+            Faithfulness(llm=self.ragas_llm),
+            AnswerRelevancy(llm=self.ragas_llm),
+            ContextPrecision(llm=self.ragas_llm),
+        ]
 
     def run_evaluation(self, test_questions: list, ground_truths: list = None):
         """Run RAGAS evaluation on a set of questions."""
@@ -71,21 +80,18 @@ class RAGEvaluator:
         # We specify the metrics we want
         score = evaluate(
             dataset,
-            metrics=[
-                faithfulness,
-                answer_relevance,
-                context_precision,
-            ],
-            # llm=self.judge_llm, # RAGAS expects a specific LLM wrapper, might need adaptation
-            # embeddings=self.embeddings
+            metrics=self.metrics,
+            llm=self.ragas_llm,
+            embeddings=self.ragas_embeddings
         )
         
         df = score.to_pandas()
         print("\nEvaluation Results:")
         print(df)
         
-        # Log scores to Langfuse (using the overall average for now or per-trace)
-        for metric_name, value in score.items():
+        # Log scores to Langfuse
+        avg_scores = df.mean(numeric_only=True).to_dict()
+        for metric_name, value in avg_scores.items():
             print(f"Metric {metric_name}: {value:.4f}")
             log_metric(f"ragas_{metric_name}", value)
             
