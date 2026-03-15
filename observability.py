@@ -3,8 +3,7 @@ import time
 from functools import wraps
 from typing import Any, Dict, List, Optional
 from dotenv import load_dotenv
-from langfuse import Langfuse
-from langfuse import Langfuse, observe
+from langfuse import Langfuse, observe, get_client
 
 load_dotenv()
 

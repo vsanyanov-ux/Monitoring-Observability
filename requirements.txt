@@ -15,6 +15,8 @@ beautifulsoup4
 markdown
 yandex-chain
 yandexcloud
+streamlit
+plotly
 # Note: yandex-chain is the underlying library for YandexGPT in many LangChain integrations
 # Alternatively, we can use the community one or just direct API calls if needed.
 # But looking at the previous project's requirements, it didn't even have a specific yandexgpt package, 
