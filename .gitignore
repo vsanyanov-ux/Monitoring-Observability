@@ -1,0 +1,28 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+bin/
+lib/
+share/
+
+# Environment Variables
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Vector DB
+chroma_db/
+chroma.sqlite3
+
+# Logs and Evaluation
+*.log
+eval_results.csv
+
+# OS
+.DS_Store
+Thumbs.db

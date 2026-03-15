@@ -1,0 +1,20 @@
+langchain
+langchain-community
+langchain-openai
+langchain-chroma
+langchain-huggingface
+langfuse
+ragas
+python-dotenv
+chromadb
+pypdf
+sentence-transformers
+pandas
+tabulate
+beautifulsoup4
+markdown
+yandex-chain
+# Note: yandex-chain is the underlying library for YandexGPT in many LangChain integrations
+# Alternatively, we can use the community one or just direct API calls if needed.
+# But looking at the previous project's requirements, it didn't even have a specific yandexgpt package, 
+# it likely used langchain-community's ChatYandexGPT.
